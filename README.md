@@ -22,27 +22,31 @@ in MessagePack format.
 Example
 -------
 ```c
-char buf_[100];
-struct msgpack_lite_packer_buf *buf = (struct msgpack_lite_packer_buf*) &buf_;
-char sensor_id[10];
-double temp = 28.0;
-double humidity = 45.0;
-int i;
+char mp_buf[100];
+struct umsgpack_packer_buf *buf = (struct umsgpack_packer_buf*)&mp_buf;
+float temp = 23.4F;
+float humidity = 51.2F;
 
-buf->pos = 0;
-buf->length = 90;
+umsgpack_packer_init(buf, sizeof(mp_buf));
+umsgpack_pack_map(buf, 2);
+umsgpack_pack_str(buf, (char *) "degC", 4);
+umsgpack_pack_float(buf, temp);
+umsgpack_pack_str(buf, (char *) "humidity", 8);
+umsgpack_pack_float(buf, humidity);
 
-msgpack_lite_pack_map(buf, 4);
-msgpack_lite_pack_str(buf, (char *) "id", 2);
-snprintf(&sensor_id, sizeof(sensor_id), "%x", getDeviceSerial());
-msgpack_lite_pack_str(buf, &sensor_id, strlen(sensor_id));
-msgpack_lite_pack_str(buf, (char *) "degC", 4);
-msgpack_lite_pack_float(buf, temp);
-msgpack_lite_pack_str(buf, (char *) "humidity", 8);
-msgpack_lite_pack_float(buf, humidity);
-        
-for (i = 0; i < buf->pos; i++) {
+for (i = 0; i < umsgpack_get_length(buf); i++) {
     printf("%2.2x",  (char) buf->data[i] & 0xFF);
 }
 printf("\n");
 ```
+
+Supported Platforms
+-------------------
+
+Please note this project is stil early stage of development and
+may not work properly on specific/all platforms.
+
+- NXP JN5148/JN5168: ba2-gcc
+- ATMEL AVR Series (incl. Arduino): avr-gcc
+- x86, x86_64: gcc, clang
+
