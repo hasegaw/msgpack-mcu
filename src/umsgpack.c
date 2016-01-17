@@ -178,11 +178,7 @@ int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val) {
     if (buf->pos + bytes > buf->length)
         return 0;
 
-    buf->data[buf->pos++] = 0xcf;
-    buf->data[buf->pos++] = (val >> 56) & 0xff;
-    buf->data[buf->pos++] = (val >> 48) & 0xff;
-    buf->data[buf->pos++] = (val >> 40) & 0xff;
-    buf->data[buf->pos++] = (val >> 32) & 0xff;
+    buf->data[buf->pos++] = 0xce;
     buf->data[buf->pos++] = (val >> 24) & 0xff;
     buf->data[buf->pos++] = (val >> 16) & 0xff;
     buf->data[buf->pos++] = (val >> 8) & 0xff;
@@ -276,17 +272,16 @@ int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val) {
 
 #endif
 
-inline int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val) {
+int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val) {
 #ifdef UMSGPACK_INT_WIDTH_16
     return umsgpack_pack_int16(buf, val);
 #endif
 }
 
-inline int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val) {
+int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val) {
 #ifdef UMSGPACK_INT_WIDTH_16
     return umsgpack_pack_uint16(buf, val);
 #endif
-
 }
 
 /**
@@ -318,7 +313,7 @@ int umsgpack_pack_float(struct umsgpack_packer_buf *buf, float val) {
 #endif
 #endif
 #if UMSGPACK_HW_FLOAT_IEEE754COMPLIANT && UMSGPACK_HW_LITTLE_ENDIAN
-    unsigned char *f = &val;
+    unsigned char *f = (void*)&val;
     buf->data[buf->pos++] = 0xca;
     buf->data[buf->pos++] = *(f + 3);
     buf->data[buf->pos++] = *(f + 2);
