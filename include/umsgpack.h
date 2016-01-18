@@ -29,7 +29,7 @@
 
 #endif
 
-#ifdef __AVR__ && __GNUC__
+#if defined(__AVR__) && defined(__GNUC__)
 /* AVR-GCC
  *         int    short      long   float  double
  *         16bits 16bits 32bits 32bits 32bits
@@ -71,8 +71,8 @@ struct umsgpack_packer_buf {
 #define umsgpack_get_length(buf) buf->pos
 
 int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length);
-inline int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val);
-inline int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val);
+int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val);
+int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val);
 #ifdef UMSGPACK_FUNC_INT32
 int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val);
 int umsgpack_pack_int32(struct umsgpack_packer_buf *buf, int32_t val);
