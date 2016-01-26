@@ -275,12 +275,20 @@ int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val) {
 int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val) {
 #ifdef UMSGPACK_INT_WIDTH_16
     return umsgpack_pack_int16(buf, val);
+#elif UMSGPACK_INT_WIDTH_32
+    return umsgpack_pack_int32(buf, val);
+#else
+#error unknown word length
 #endif
 }
 
 int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val) {
 #ifdef UMSGPACK_INT_WIDTH_16
     return umsgpack_pack_uint16(buf, val);
+#elif UMSGPACK_INT_WIDTH_32
+    return umsgpack_pack_uint32(buf, val);
+#else
+#error unknown word length
 #endif
 }
 
