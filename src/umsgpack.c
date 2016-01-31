@@ -30,13 +30,16 @@
  */
 #ifdef UMSGPACK_LITTLE_ENDIAN
 static inline unsigned short _bswap_16(unsigned short x) {
-    return (x << 8 ) | (x >> 8);
+    return (x << 8) | (x >> 8);
 }
 
 static inline unsigned int _bswap_32(unsigned int x) {
     return (_bswap_16(x&0xffff) << 16) | (_bswap_16(x >> 16));
 }
 
+static inline uint64_t _bswap_64(uint64_t x) {
+    return ((uint64_t)_bswap_32(x&0xffffffff) << 32) | (_bswap_32(x >> 32));
+}
 #if 0
 static inline void _store_be16(void *dest, unsigned short *val) {
     *((unsigned short*)dest) = _bswap_16(*val);
@@ -60,6 +63,9 @@ static inline unsigned int _bswap_32(unsigned int x) {
     return x;
 }
 
+static inline uint64_t _bswap_64(uint64_t x) {
+    return x;
+}
 #if 0
 static inline void _store_be16(void *dest, unsigned short val) {
     *((unsigned short*)dest) = val;
@@ -71,6 +77,35 @@ static inline void _store_be32(void *dest, void *val) {
     *d = *((unsigned long *) val);
 }
 #endif
+
+static void encode_16bit_value(struct umsgpack_packer_buf *buf, uint16_t val) {
+    uint16_t be = _bswap_16(val);
+    const uint8_t *p = (const uint8_t*)&be;
+    buf->data[buf->pos++] = p[0];
+    buf->data[buf->pos++] = p[1];
+}
+
+static void encode_32bit_value(struct umsgpack_packer_buf *buf, uint32_t val) {
+    uint32_t be = _bswap_32(val);
+    const uint8_t *p = (const uint8_t*)&be;
+    buf->data[buf->pos++] = p[0];
+    buf->data[buf->pos++] = p[1];
+    buf->data[buf->pos++] = p[2];
+    buf->data[buf->pos++] = p[3];
+}
+
+static void encode_64bit_value(struct umsgpack_packer_buf *buf, uint64_t val) {
+    uint64_t be = _bswap_64(val);
+    const uint8_t *p = (const uint8_t*)&be;
+    buf->data[buf->pos++] = p[0];
+    buf->data[buf->pos++] = p[1];
+    buf->data[buf->pos++] = p[2];
+    buf->data[buf->pos++] = p[3];
+    buf->data[buf->pos++] = p[4];
+    buf->data[buf->pos++] = p[5];
+    buf->data[buf->pos++] = p[6];
+    buf->data[buf->pos++] = p[7];
+}
 
 /**
  * @param[in] buf    Destination buffer
@@ -90,8 +125,7 @@ int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length) {
 
     case 3:
         buf->data[buf->pos++] = 0xde;
-        buf->data[buf->pos++] = (length >> 8) & 0xff;
-        buf->data[buf->pos++] = length & 0xff;
+        encode_16bit_value(buf, (uint16_t)length);
     }
     return 1;
 }
@@ -124,15 +158,13 @@ int umsgpack_pack_uint16(struct umsgpack_packer_buf *buf, uint16_t val) {
 
     case 3:
         buf->data[buf->pos++] = 0xcd;
-        buf->data[buf->pos++] = (val >> 8) & 0xff;
-        buf->data[buf->pos++] = val & 0xff;
+        encode_16bit_value(buf, val);
     }
     return 1;
 }
 
 int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val) {
     int bytes;
-    unsigned char *p;
 
     if (val >= 0)
         return umsgpack_pack_uint16(buf, (uint16_t) val);
@@ -156,12 +188,8 @@ int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val) {
         break;
 
     case 3:
-        /* fixme: assume big endian */
-        p = (void*) &val;
-
         buf->data[buf->pos++] = 0xd1;
-        buf->data[buf->pos++] = *p;
-        buf->data[buf->pos++] = *(p + 1);
+        encode_16bit_value(buf, (uint16_t)val);
     }
     return 1;
 }
@@ -179,16 +207,12 @@ int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val) {
         return 0;
 
     buf->data[buf->pos++] = 0xce;
-    buf->data[buf->pos++] = (val >> 24) & 0xff;
-    buf->data[buf->pos++] = (val >> 16) & 0xff;
-    buf->data[buf->pos++] = (val >> 8) & 0xff;
-    buf->data[buf->pos++] = val & 0xff;
+    encode_32bit_value(buf, val);
     return 1;
 }
 
 int umsgpack_pack_int32(struct umsgpack_packer_buf *buf, int32_t val) {
     int bytes = 5;
-    unsigned char *p;
 
     if (val >= 0)
         return umsgpack_pack_uint32(buf, (uint32_t) val);
@@ -199,14 +223,8 @@ int umsgpack_pack_int32(struct umsgpack_packer_buf *buf, int32_t val) {
     if (buf->pos + bytes > buf->length)
         return 0;
 
-    /* fixme: assume big endian */
-    p = (void*) &val;
-
     buf->data[buf->pos++] = 0xd2;
-    buf->data[buf->pos++] = *p;
-    buf->data[buf->pos++] = *(p + 1);
-    buf->data[buf->pos++] = *(p + 2);
-    buf->data[buf->pos++] = *(p + 3);
+    encode_32bit_value(buf, (uint32_t)val);
     return 1;
 }
 #endif
@@ -226,22 +244,13 @@ int umsgpack_pack_uint64(struct umsgpack_packer_buf *buf, uint64_t val) {
     if (buf->pos + bytes > buf->length)
         return 0;
 
-    /* fixme: assue big endian */
     buf->data[buf->pos++] = 0xcf;
-    buf->data[buf->pos++] = (val >> 56) & 0xff;
-    buf->data[buf->pos++] = (val >> 48) & 0xff;
-    buf->data[buf->pos++] = (val >> 40) & 0xff;
-    buf->data[buf->pos++] = (val >> 32) & 0xff;
-    buf->data[buf->pos++] = (val >> 24) & 0xff;
-    buf->data[buf->pos++] = (val >> 16) & 0xff;
-    buf->data[buf->pos++] = (val >> 8) & 0xff;
-    buf->data[buf->pos++] = val & 0xff;
+    encode_64bit_value(buf, val);
     return 1;
 }
 
 int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val) {
     int bytes = 9;
-    unsigned char *p;
 
     if (val >= 0)
         return umsgpack_pack_uint64(buf, (uint64_t) val);
@@ -255,18 +264,8 @@ int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val) {
     if (buf->pos + bytes > buf->length)
         return 0;
 
-    /* fixme: assume big endian */
-    p = (void*) &val;
-
     buf->data[buf->pos++] = 0xd3;
-    buf->data[buf->pos++] = *p;
-    buf->data[buf->pos++] = *(p + 1);
-    buf->data[buf->pos++] = *(p + 2);
-    buf->data[buf->pos++] = *(p + 3);
-    buf->data[buf->pos++] = *(p + 4);
-    buf->data[buf->pos++] = *(p + 5);
-    buf->data[buf->pos++] = *(p + 6);
-    buf->data[buf->pos++] = *(p + 7);
+    encode_64bit_value(buf, (uint64_t)val);
     return 1;
 }
 
@@ -378,8 +377,7 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, int num_objects) {
 
     case 3:
         buf->data[buf->pos++] = 0xdf;
-        buf->data[buf->pos++] = (num_objects >> 8) & 0xff;
-        buf->data[buf->pos++] = num_objects & 0xff;
+        encode_16bit_value(buf, (uint16_t)num_objects);
         break;
     default:
         return 0;
@@ -416,8 +414,7 @@ int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length) {
 
     case 4:
         buf->data[buf->pos++] = 0x0da;
-        buf->data[buf->pos++] = (length >> 8) & 0xff;
-        buf->data[buf->pos++] = length & 0xff;
+        encode_16bit_value(buf, (uint16_t)length);
         break;
     default:
         return 0;

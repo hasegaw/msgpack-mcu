@@ -222,6 +222,7 @@ MU_TEST(test_uint8) {
 		return;
 	}
 
+	/* positive fixint: 0x00-0x7f */
 	const uint8_t foramt = 0xcc;
 	const uint8_t testdata[] = { 0x80, 0xA0, 0xCC, 0xF0, 0xff };
 	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
@@ -335,18 +336,133 @@ MU_TEST(test_uint64) {
 
 MU_TEST(test_int8) {
 	/* 0xd0 + int8-value */
+	const size_t unit_size = sizeof(int8_t);
+	const size_t data_size = FORMAT_MAX_SIZE + unit_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* positive fixint: 0x00-0x7f */
+	/* negative fixint: 0xe0-0xff */
+	const uint8_t foramt = 0xd0;
+	const int8_t testdata[] = { 0x80, 0xa0, 0xcc, 0xd0, 0xdf };
+	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int8_t expects = testdata[i];
+		umsgpack_pack_int(m_pack, expects);
+		// length
+		mu_assert_int_eq(1+unit_size, m_pack->pos);
+		// format
+		mu_assert_int_eq(foramt, m_pack->data[0]);
+		// value
+		mu_assert_int_eq(expects, (int8_t)m_pack->data[1]);
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_int16) {
 	/* 0xd1 + int16-value[BigEndian] */
+	const size_t unit_size = sizeof(int16_t);
+	const size_t data_size = FORMAT_MAX_SIZE + unit_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* negative fixint: 0xe0-0xff */
+	/* int8: 0x80~0xdf */
+	const uint8_t foramt = 0xd1;
+	const int16_t testdata[] = { 0x8000, 0x8123, 0xc000, 0xf000, 0xff7f };
+	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int16_t expects = testdata[i];
+		const uint16_t *actual;
+		umsgpack_pack_int(m_pack, expects);
+		// length
+		mu_assert_int_eq(1+unit_size, m_pack->pos);
+		// format
+		mu_assert_int_eq(foramt, m_pack->data[0]);
+		// value
+		actual = (const uint16_t*)&m_pack->data[1];
+		mu_assert_int_eq(expects, (int16_t)_be16(*actual));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_int32) {
 	/* 0xd2 + int32-value[BigEndian] */
+	const size_t unit_size = sizeof(int32_t);
+	const size_t data_size = FORMAT_MAX_SIZE + unit_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* negative fixint: 0xe0-0xff */
+	/* int8 : 0x80~0xdf */
+	/* int16: 0x8000~0xff7f */
+	const uint8_t foramt = 0xd2;
+	const int32_t testdata[] = { 0x80000000, 0x81234567, 0xc0000000, 0xf0000000, 0xffff7fff };
+	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int32_t expects = testdata[i];
+		const uint32_t *actual;
+		umsgpack_pack_int(m_pack, expects);
+		// length
+		mu_assert_int_eq(1+unit_size, m_pack->pos);
+		// format
+		mu_assert_int_eq(foramt, m_pack->data[0]);
+		// value
+		actual = (const uint32_t*)&m_pack->data[1];
+		mu_assert_int_eq(expects, (int32_t)_be32(*actual));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_int64) {
 	/* 0xd3 + int64-value[BigEndian] */
+	const size_t unit_size = sizeof(int64_t);
+	const size_t data_size = FORMAT_MAX_SIZE + unit_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* negative fixint: 0xe0-0xff */
+	/* int8 : 0x80~0xdf */
+	/* int16: 0x8000~0xff7f */
+	/* int32: 0x80000000~0xffff7fff */
+	const uint8_t foramt = 0xd3;
+	const int64_t testdata[] = {
+		0x8000000000000000,
+		0x81234567890abcde,
+		0xc000000000000000,
+		0xf000000000000000,
+		0xffffffff7fffffff,
+	};
+	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int64_t expects = testdata[i];
+		const uint64_t *actual;
+		umsgpack_pack_int64(m_pack, expects);
+		// length
+		mu_assert_int_eq(1+unit_size, m_pack->pos);
+		// format
+		mu_assert_int_eq(foramt, m_pack->data[0]);
+		// value
+		actual = (const uint64_t*)&m_pack->data[1];
+		mu_assert_int_eq(expects, (int64_t)_be64(*actual));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_fixext1) {
