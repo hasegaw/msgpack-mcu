@@ -5,7 +5,7 @@ MKDIR := mkdir -p
 CFLAGS  = -std=c99
 CFLAGS += -Wall
 CFLAGS += -Wextra
-CFLAGS += -Werror
+# CFLAGS += -Werror
 CFLAGS += -Wpointer-arith
 # CFLAGS += -Wcast-align
 CFLAGS += -Wwrite-strings
