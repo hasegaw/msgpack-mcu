@@ -68,7 +68,7 @@ MU_TEST(test_positive_fixint) {
 	}
 
 	for (uint8_t expects = 0; expects < 0x7f; expects++) {
-		umsgpack_pack_uint(m_pack, expects);
+		mu_check( umsgpack_pack_uint(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1, m_pack->pos);
 		// format
@@ -88,7 +88,7 @@ MU_TEST(test_fixmap) {
 
 	for (int8_t i = 0; i < 0x0f; i++) {
 		uint8_t expects = 0x80 | i;
-		umsgpack_pack_map(m_pack, i);
+		mu_check( umsgpack_pack_map(m_pack, i) );
 		// length
 		mu_assert_int_eq(1, m_pack->pos);
 		// format
@@ -108,7 +108,7 @@ MU_TEST(test_fixarray) {
 
 	for (int8_t i = 0; i < 0x0f; i++) {
 		uint8_t expects = 0x90 | i;
-		umsgpack_pack_array(m_pack, i);
+		mu_check( umsgpack_pack_array(m_pack, i) );
 		// length
 		mu_assert_int_eq(1, m_pack->pos);
 		// format
@@ -129,7 +129,7 @@ MU_TEST(test_fixstr) {
 
 	for (int8_t i = 0; i <= (int8_t)str_length; i++) {
 		uint8_t expects = 0xa0 | i;
-		umsgpack_pack_str(m_pack, (char*)str_test_data.pattern, i);
+		mu_check( umsgpack_pack_str(m_pack, (char*)str_test_data.pattern, i) );
 		// length
 		mu_assert_int_eq(i+1, m_pack->pos);
 		// format
@@ -156,7 +156,7 @@ MU_TEST(test_false) {
 	}
 
 	uint8_t expects = 0xc2;
-	umsgpack_pack_bool(m_pack, 0);
+	mu_check( umsgpack_pack_bool(m_pack, 0) );
 	// length
 	mu_assert_int_eq(1, m_pack->pos);
 	// format
@@ -173,7 +173,7 @@ MU_TEST(test_true) {
 	}
 
 	uint8_t expects = 0xc3;
-	umsgpack_pack_bool(m_pack, 1);
+	mu_check( umsgpack_pack_bool(m_pack, 1) );
 	// length
 	mu_assert_int_eq(1, m_pack->pos);
 	// format
@@ -229,7 +229,7 @@ MU_TEST(test_uint8) {
 
 	for (int i = 0; i < numof_testdata; i++) {
 		uint8_t expects = testdata[i];
-		umsgpack_pack_uint(m_pack, expects);
+		mu_check( umsgpack_pack_uint(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -257,7 +257,7 @@ MU_TEST(test_uint16) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint16_t expects = testdata[i];
 		const uint16_t *actual;
-		umsgpack_pack_uint(m_pack, expects);
+		mu_check( umsgpack_pack_uint(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -286,7 +286,7 @@ MU_TEST(test_uint32) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint32_t expects = testdata[i];
 		const uint32_t *actual;
-		umsgpack_pack_uint(m_pack, expects);
+		mu_check( umsgpack_pack_uint(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -322,7 +322,7 @@ MU_TEST(test_uint64) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint64_t expects = testdata[i];
 		const uint64_t *actual;
-		umsgpack_pack_uint64(m_pack, expects);
+		mu_check( umsgpack_pack_uint64(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -352,7 +352,7 @@ MU_TEST(test_int8) {
 
 	for (int i = 0; i < numof_testdata; i++) {
 		int8_t expects = testdata[i];
-		umsgpack_pack_int(m_pack, expects);
+		mu_check( umsgpack_pack_int(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -382,7 +382,7 @@ MU_TEST(test_int16) {
 	for (int i = 0; i < numof_testdata; i++) {
 		int16_t expects = testdata[i];
 		const uint16_t *actual;
-		umsgpack_pack_int(m_pack, expects);
+		mu_check( umsgpack_pack_int(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -414,7 +414,7 @@ MU_TEST(test_int32) {
 	for (int i = 0; i < numof_testdata; i++) {
 		int32_t expects = testdata[i];
 		const uint32_t *actual;
-		umsgpack_pack_int(m_pack, expects);
+		mu_check( umsgpack_pack_int(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -453,7 +453,7 @@ MU_TEST(test_int64) {
 	for (int i = 0; i < numof_testdata; i++) {
 		int64_t expects = testdata[i];
 		const uint64_t *actual;
-		umsgpack_pack_int64(m_pack, expects);
+		mu_check( umsgpack_pack_int64(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1+unit_size, m_pack->pos);
 		// format
@@ -520,7 +520,7 @@ MU_TEST(test_str8) {
 
 	for (int i = 0; i < numof_testdata; i++) {
 		uint8_t len = str_lengths[i];
-		umsgpack_pack_str(m_pack, ptn, len);
+		mu_check( umsgpack_pack_str(m_pack, ptn, len) );
 		// length
 		mu_assert_int_eq(1+sizeof(uint8_t)+len, m_pack->pos);
 		// format
@@ -560,7 +560,7 @@ MU_TEST(test_str16) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint16_t len = str_lengths[i];
 		const uint16_t *act_len;
-		umsgpack_pack_str(m_pack, ptn, len);
+		mu_check( umsgpack_pack_str(m_pack, ptn, len) );
 		// length
 		mu_assert_int_eq(1+sizeof(uint16_t)+len, m_pack->pos);
 		// format
@@ -596,7 +596,7 @@ MU_TEST(test_array16) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint16_t len = data_lengths[i];
 		const uint16_t *act_len;
-		umsgpack_pack_array(m_pack, len);
+		mu_check( umsgpack_pack_array(m_pack, len) );
 		// length
 		mu_assert_int_eq(1+sizeof(uint16_t), m_pack->pos);
 		// format
@@ -628,7 +628,7 @@ MU_TEST(test_map16) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint16_t len = data_lengths[i];
 		const uint16_t *act_len;
-		umsgpack_pack_map(m_pack, len);
+		mu_check( umsgpack_pack_map(m_pack, len) );
 		// length
 		mu_assert_int_eq(1+sizeof(uint16_t), m_pack->pos);
 		// format
@@ -657,7 +657,7 @@ MU_TEST(test_map32) {
 	for (int i = 0; i < numof_testdata; i++) {
 		uint32_t len = data_lengths[i];
 		const uint32_t *act_len;
-		umsgpack_pack_map(m_pack, len);
+		mu_check( umsgpack_pack_map(m_pack, len) );
 		// length
 		mu_assert_int_eq(1+sizeof(uint32_t), m_pack->pos);
 		// format
@@ -678,7 +678,7 @@ MU_TEST(test_negative_fixint) {
 	}
 
 	for (int8_t expects = -32; expects < 0; expects++) {
-		umsgpack_pack_int(m_pack, expects);
+		mu_check( umsgpack_pack_int(m_pack, expects) );
 		// length
 		mu_assert_int_eq(1, m_pack->pos);
 		// format
