@@ -48,6 +48,7 @@ TEST_SOURCES  = $(TEST_DIR)/umsgpack_test.c
 UNITTEST_FRAMEWORK := minunit
 UNITTEST_FRAMEWORK_GIT_URL := https://github.com/siu/minunit.git
 UNITTEST_FRAMEWORK_GIT_CONFIG := $(TEST_DIR)/$(UNITTEST_FRAMEWORK)/.git/config
+UNITTEST_FRAMEWORK_PATCH := patches/minunit.patch
 
 OBJECTS  = $(addprefix $(BUILD_DIR)/,$(notdir $(SOURCES:.c=.o)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(TEST_SOURCES:.c=.o)))
@@ -67,6 +68,7 @@ test: $(BUILD_DIR)/$(TARGET)
 
 $(UNITTEST_FRAMEWORK_GIT_CONFIG):
 	git clone $(UNITTEST_FRAMEWORK_GIT_URL) $(TEST_DIR)/$(UNITTEST_FRAMEWORK)
+	patch -p0 < $(UNITTEST_FRAMEWORK_PATCH)
 
 $(BUILD_DIR):
 	@[ -d $(BUILD_DIR) ] || $(MKDIR) $(BUILD_DIR)
