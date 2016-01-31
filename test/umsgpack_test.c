@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 #include "umsgpack.h"
 #include "minunit/minunit.h"
 

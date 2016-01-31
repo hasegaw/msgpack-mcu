@@ -25,6 +25,7 @@ CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unreachable-code
 CFLAGS += -Wno-old-style-definition
 CFLAGS += -Wno-overflow
+CFLAGS += -Wimplicit-function-declaration
 CFLAGS += -pedantic-errors
 CFLAGS += -g -O0
 # CFLAGS += -O3 -flto
