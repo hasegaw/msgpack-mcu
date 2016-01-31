@@ -124,7 +124,7 @@ int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length) {
         break;
 
     case 3:
-        buf->data[buf->pos++] = 0xde;
+        buf->data[buf->pos++] = 0xdc;
         encode_16bit_value(buf, (uint16_t)length);
     }
     return 1;
