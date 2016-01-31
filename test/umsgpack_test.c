@@ -485,12 +485,94 @@ MU_TEST(test_fixext16) {
 	/* 0xd8 + 8bit-type + 128bit-data */
 }
 
+static void generate_pattern(char *dst, size_t len) {
+	size_t remain = len;
+	char *p = dst;
+	while (remain > 0) {
+		size_t copy_size = (remain > str_test_data.size) ? str_test_data.size : remain;
+		memcpy(p, str_test_data.pattern, copy_size);
+		p += copy_size;
+		remain -= copy_size;
+	}
+}
+
 MU_TEST(test_str8) {
 	/* 0xd9 + uint8-lenght + string... */
+	const size_t max_data_size = 0xff;
+	const size_t data_size = FORMAT_MAX_SIZE + max_data_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* fixstr: 0~31 */
+	const uint8_t format = 0xd9;
+	const int str_lengths[] = { 0x20, 0xff };
+	const int numof_testdata = sizeof(str_lengths) / sizeof(str_lengths[0]);
+
+	char *ptn = malloc(max_data_size);
+	if (!ptn) {
+		fprintf(stderr, "%s: failed malloc(%lu). skip test.\n", __func__, max_data_size);
+		return;
+	}
+	generate_pattern(ptn, max_data_size);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int len = str_lengths[i];
+		umsgpack_pack_str(m_pack, ptn, len);
+		// length
+		mu_assert_int_eq(1+sizeof(uint8_t)+len, m_pack->pos);
+		// format
+		mu_assert_int_eq(format, m_pack->data[0]);
+		mu_assert_int_eq(len, m_pack->data[1]);
+		// string
+		mu_check(!memcmp(ptn, &m_pack->data[2], len));
+		m_pack->pos = 0;
+	}
+
+	free(ptn);
 }
 
 MU_TEST(test_str16) {
 	/* 0xda + uint16-lenght[BigEndian] + string... */
+	const size_t max_data_size = 0xffff;
+	const size_t data_size = FORMAT_MAX_SIZE + max_data_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* fixstr: 0~31 */
+	/* str8: 0x20~0xff */
+	const uint8_t format = 0xda;
+	const int str_lengths[] = { 0x0100, 0xffff };
+	const int numof_testdata = sizeof(str_lengths) / sizeof(str_lengths[0]);
+
+	char *ptn = malloc(max_data_size);
+	if (!ptn) {
+		fprintf(stderr, "%s: failed malloc(%lu). skip test.\n", __func__, max_data_size);
+		return;
+	}
+	generate_pattern(ptn, max_data_size);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		int len = str_lengths[i];
+		const uint16_t *act_len;
+		umsgpack_pack_str(m_pack, ptn, len);
+		// length
+		mu_assert_int_eq(1+sizeof(uint16_t)+len, m_pack->pos);
+		// format
+		mu_assert_int_eq(format, m_pack->data[0]);
+		act_len = (const uint16_t*)&m_pack->data[1];
+		mu_assert_int_eq((uint16_t)len, (uint16_t)_be16(*act_len));
+		// string
+		mu_check(!memcmp(ptn, &m_pack->data[3], len));
+		m_pack->pos = 0;
+	}
+
+	free(ptn);
 }
 
 MU_TEST(test_str32) {
