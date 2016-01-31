@@ -126,6 +126,10 @@ int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length) {
     case 3:
         buf->data[buf->pos++] = 0xdc;
         encode_16bit_value(buf, (uint16_t)length);
+        break;
+
+    default:
+        break;
     }
     return 1;
 }
@@ -159,6 +163,10 @@ int umsgpack_pack_uint16(struct umsgpack_packer_buf *buf, uint16_t val) {
     case 3:
         buf->data[buf->pos++] = 0xcd;
         encode_16bit_value(buf, val);
+        break;
+
+    default:
+        break;
     }
     return 1;
 }
@@ -190,6 +198,10 @@ int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val) {
     case 3:
         buf->data[buf->pos++] = 0xd1;
         encode_16bit_value(buf, (uint16_t)val);
+        break;
+
+    default:
+        break;
     }
     return 1;
 }

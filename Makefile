@@ -22,6 +22,7 @@ CFLAGS += -Wmissing-declarations
 CFLAGS += -Wno-unused-parameter
 CFLAGS += -Wno-unused-function
 # CFLAGS += -Wfloat-equal
+CFLAGS += -Wno-unreachable-code
 CFLAGS += -pedantic-errors
 CFLAGS += -g -O0
 # CFLAGS += -O3 -flto
