@@ -173,7 +173,7 @@ int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val) {
     const int bytes = 5;
 
     if (val < 0x10000)
-        return umsgpack_pack_int16(buf, val);
+        return umsgpack_pack_uint16(buf, val);
 
     if (buf->pos + bytes > buf->length)
         return 0;

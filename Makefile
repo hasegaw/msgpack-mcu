@@ -20,12 +20,16 @@ CFLAGS += -Wold-style-definition
 # CFLAGS += -Wmissing-prototypes
 CFLAGS += -Wmissing-declarations
 CFLAGS += -Wno-unused-parameter
+CFLAGS += -Wno-unused-function
 # CFLAGS += -Wfloat-equal
 CFLAGS += -pedantic-errors
 CFLAGS += -g -O0
 # CFLAGS += -O3 -flto
 CFLAGS += -MMD -MP
 LDFLGAS := 
+
+DEFINES  = -DUMSGPACK_FUNC_INT32
+DEFINES += -DUMSGPACK_FUNC_INT64
 
 BUILD_DIR  = _build
 SOURCE_DIR = src
@@ -64,10 +68,10 @@ $(BUILD_DIR):
 	@[ -d $(BUILD_DIR) ] || $(MKDIR) $(BUILD_DIR)
 
 $(BUILD_DIR)/%.o:$(SOURCE_DIR)/%.c
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
+	$(CC) $(CFLAGS) $(DEFINES) $(INCLUDES) -o $@ -c $<
 
 $(BUILD_DIR)/%.o:$(TEST_DIR)/%.c
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
+	$(CC) $(CFLAGS) $(DEFINES) $(INCLUDES) -o $@ -c $<
 
 clean:
 	$(RM) $(BUILD_DIR)
