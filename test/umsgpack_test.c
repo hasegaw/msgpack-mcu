@@ -9,9 +9,7 @@
 #define FORMAT_MAX_SIZE 9
 struct umsgpack_packer_buf *m_pack = NULL;
 
-
-const static char m_char_patterns[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()-_=+{}[]{}|;:',.<>/?";
-const static size_t m_char_pattern_size = sizeof(m_char_patterns);
+static const char m_char_patterns[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~!@#$%^&*()-_=+{}[]{}|;:',.<>/?";
 static bool m_is_bigendian = false;
 
 struct {
@@ -19,14 +17,14 @@ struct {
 	const size_t size;
 } str_test_data = {
 	.pattern = m_char_patterns,
-	.size = m_char_pattern_size,
+	.size = sizeof(m_char_patterns),
 };
 
 
-void test_setup() {
+void test_setup(void) {
 }
 
-void test_teardown() {
+void test_teardown(void) {
 	umsgpack_free(m_pack);
 	m_pack = NULL;
 }
