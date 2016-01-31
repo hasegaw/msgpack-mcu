@@ -88,7 +88,7 @@ int umsgpack_pack_float(struct umsgpack_packer_buf *buf, float val);
 #if 0
 int umsgpack_pack_double(struct umsgpack_packer_buf *buf, double val);
 #endif
-int umsgpack_pack_map(struct umsgpack_packer_buf *buf, int num_objects);
+int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects);
 int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length);
 int umsgpack_pack_bool(struct umsgpack_packer_buf *buf, int val);
 void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size);

@@ -356,11 +356,11 @@ int umsgpack_pack_double(struct umsgpack_packer_buf *buf, double val) {
  * @param[in] buf         Destination buffer
  * @param[in] num_objects Number of objects (key-value pairs) in the map
  */
-int umsgpack_pack_map(struct umsgpack_packer_buf *buf, int num_objects) {
+int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects) {
     int bytes;
     bytes = num_objects <= 0x0f ? 1:
-            num_objects <= 0xFFFF ? 2:
-            num_objects <= 0xFFFF ? 3: 0;
+            num_objects <= 0xFFFF ? 3:
+            num_objects <= 0xFFFFFFFF ? 5: 0;
 
     if (buf->pos + bytes > buf->length)
         return 0;
@@ -370,14 +370,14 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, int num_objects) {
         buf->data[buf->pos++] = 0x80 | (num_objects & 0x0f);
         break;
 
-    case 2:
+    case 3:
         buf->data[buf->pos++] = 0xde;
-        buf->data[buf->pos++] = num_objects & 0xff;
+        encode_16bit_value(buf, (uint16_t)num_objects);
         break;
 
-    case 3:
+    case 5:
         buf->data[buf->pos++] = 0xdf;
-        encode_16bit_value(buf, (uint16_t)num_objects);
+        encode_32bit_value(buf, (uint32_t)num_objects);
         break;
     default:
         return 0;

@@ -508,7 +508,7 @@ MU_TEST(test_str8) {
 
 	/* fixstr: 0~31 */
 	const uint8_t format = 0xd9;
-	const int str_lengths[] = { 0x20, 0xff };
+	const uint8_t str_lengths[] = { 0x20, 0xff };
 	const int numof_testdata = sizeof(str_lengths) / sizeof(str_lengths[0]);
 
 	char *ptn = malloc(max_data_size);
@@ -519,7 +519,7 @@ MU_TEST(test_str8) {
 	generate_pattern(ptn, max_data_size);
 
 	for (int i = 0; i < numof_testdata; i++) {
-		int len = str_lengths[i];
+		uint8_t len = str_lengths[i];
 		umsgpack_pack_str(m_pack, ptn, len);
 		// length
 		mu_assert_int_eq(1+sizeof(uint8_t)+len, m_pack->pos);
@@ -547,7 +547,7 @@ MU_TEST(test_str16) {
 	/* fixstr: 0~31 */
 	/* str8: 0x20~0xff */
 	const uint8_t format = 0xda;
-	const int str_lengths[] = { 0x0100, 0xffff };
+	const uint16_t str_lengths[] = { 0x0100, 0xffff };
 	const int numof_testdata = sizeof(str_lengths) / sizeof(str_lengths[0]);
 
 	char *ptn = malloc(max_data_size);
@@ -558,7 +558,7 @@ MU_TEST(test_str16) {
 	generate_pattern(ptn, max_data_size);
 
 	for (int i = 0; i < numof_testdata; i++) {
-		int len = str_lengths[i];
+		uint16_t len = str_lengths[i];
 		const uint16_t *act_len;
 		umsgpack_pack_str(m_pack, ptn, len);
 		// length
@@ -581,8 +581,7 @@ MU_TEST(test_str32) {
 
 MU_TEST(test_array16) {
 	/* 0xdc + uint16-length[BigEndian] + {N objects} */
-	const size_t max_data_size = 0xffff;
-	const size_t data_size = FORMAT_MAX_SIZE + max_data_size;
+	const size_t data_size = FORMAT_MAX_SIZE;
 	m_pack = umsgpack_alloc(data_size);
 	if (!m_pack) {
 		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
@@ -591,11 +590,11 @@ MU_TEST(test_array16) {
 
 	/* fixarray: 0x00-0x0f */
 	const uint8_t format = 0xdc;
-	const int data_lengths[] = { 0x0010, 0x8000, 0xffff };
+	const uint16_t data_lengths[] = { 0x0010, 0x8000, 0xffff };
 	const int numof_testdata = sizeof(data_lengths) / sizeof(data_lengths[0]);
 
 	for (int i = 0; i < numof_testdata; i++) {
-		int len = data_lengths[i];
+		uint16_t len = data_lengths[i];
 		const uint16_t *act_len;
 		umsgpack_pack_array(m_pack, len);
 		// length
@@ -614,10 +613,59 @@ MU_TEST(test_array32) {
 
 MU_TEST(test_map16) {
 	/* 0xde + uint16-length[BigEndian] + {N*2 objects} */
+	const size_t data_size = FORMAT_MAX_SIZE;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* fixmap: 0x00-0x0f */
+	const uint8_t format = 0xde;
+	const uint16_t data_lengths[] = { 0x0010, 0x8000, 0xffff };
+	const int numof_testdata = sizeof(data_lengths) / sizeof(data_lengths[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		uint16_t len = data_lengths[i];
+		const uint16_t *act_len;
+		umsgpack_pack_map(m_pack, len);
+		// length
+		mu_assert_int_eq(1+sizeof(uint16_t), m_pack->pos);
+		// format
+		mu_assert_int_eq(format, m_pack->data[0]);
+		act_len = (const uint16_t*)&m_pack->data[1];
+		mu_assert_int_eq((uint16_t)len, (uint16_t)_be16(*act_len));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_map32) {
 	/* 0xdf + uint32-length[BigEndian] + {N*2 objects} */
+	const size_t data_size = FORMAT_MAX_SIZE;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	/* fixmap: 0x00-0x0f */
+	/* map16 : 0x0010~0xffff */
+	const uint8_t format = 0xdf;
+	const uint32_t data_lengths[] = { 0x00010000, 0x80000000, 0xffffffff };
+	const int numof_testdata = sizeof(data_lengths) / sizeof(data_lengths[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		uint32_t len = data_lengths[i];
+		const uint32_t *act_len;
+		umsgpack_pack_map(m_pack, len);
+		// length
+		mu_assert_int_eq(1+sizeof(uint32_t), m_pack->pos);
+		// format
+		mu_assert_int_eq(format, m_pack->data[0]);
+		act_len = (const uint32_t*)&m_pack->data[1];
+		mu_assert_int_eq((uint32_t)len, (uint32_t)_be32(*act_len));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_negative_fixint) {
