@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <float.h>
 #include "umsgpack.h"
 #include "minunit/minunit.h"
 
@@ -205,6 +206,31 @@ MU_TEST(test_ext32) {
 
 MU_TEST(test_float32) {
 	/* 0xca + float32-value[BigEndian,IEEE754] */
+	const size_t unit_size = sizeof(float);
+	const size_t data_size = FORMAT_MAX_SIZE + unit_size;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	const uint8_t foramt = 0xca;
+	const float testdata[] = { FLT_MIN, 0.0, FLT_MAX };
+	const int numof_testdata = sizeof(testdata) / sizeof(testdata[0]);
+
+	for (int i = 0; i < numof_testdata; i++) {
+		uint8_t expects = testdata[i];
+		const uint32_t *actual;
+		mu_check( umsgpack_pack_float(m_pack, expects) );
+		// length
+		mu_assert_int_eq(1+unit_size, m_pack->pos);
+		// format
+		mu_assert_int_eq(foramt, m_pack->data[0]);
+		// value
+		actual = (const uint32_t*)&m_pack->data[1];
+		mu_assert_double_eq(expects, (float)_be32(*actual));
+		m_pack->pos = 0;
+	}
 }
 
 MU_TEST(test_float64) {
