@@ -1,0 +1,50 @@
+diff --git test/minunit/minunit.h test/minunit/minunit.h
+index 9858ab0..ed1c367 100644
+--- test/minunit/minunit.h
++++ test/minunit/minunit.h
+@@ -205,6 +205,12 @@ static void (*minunit_teardown)(void) = NULL;
+  */
+ static double mu_timer_real( )
+ {
++#if 1
++	/* AIX, BSD, Cygwin, HP-UX, Linux, OSX, POSIX, Solaris. ----- */
++	struct timeval tm;
++	gettimeofday( &tm, NULL );
++	return (double)tm.tv_sec + (double)tm.tv_usec / 1000000.0;
++#else
+ #if defined(_WIN32)
+ 	FILETIME tm;
+ 	ULONGLONG t;
+@@ -272,6 +278,7 @@ static double mu_timer_real( )
+ #else
+ 	return -1.0;		/* Failed. */
+ #endif
++#endif
+ }
+ 
+ /**
+@@ -280,6 +287,16 @@ static double mu_timer_real( )
+  */
+ static double mu_timer_cpu( )
+ {
++#if 1
++#if defined(CLOCKS_PER_SEC)
++	{
++		clock_t cl = clock( );
++		if ( cl != (clock_t)-1 )
++			return (double)cl / (double)CLOCKS_PER_SEC;
++	}
++#endif
++	return -1.0;
++#else
+ #if defined(_WIN32)
+ 	/* Windows -------------------------------------------------- */
+ 	FILETIME createTime;
+@@ -353,6 +370,7 @@ static double mu_timer_cpu( )
+ #endif
+ 
+ 	return -1;		/* Failed. */
++#endif
+ }
+ 
+ #ifdef __cplusplus
