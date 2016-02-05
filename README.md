@@ -1,7 +1,5 @@
-`msgpack` for MCU
-=================
-
-It's like JSON but small and fast.
+`msgpack` for MCUs
+==================
 
 Overview
 --------
@@ -50,3 +48,9 @@ may not work properly on specific/all platforms.
 - ATMEL AVR Series (incl. Arduino): avr-gcc
 - x86, x86_64: gcc, clang
 
+Contributors
+------------
+
+- eflukx
+- hasegaw
+- ryohack
