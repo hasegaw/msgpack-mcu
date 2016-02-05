@@ -9,6 +9,7 @@
  *   0x80-0x8f: fixmap
  *   0x90-0x9f: fixarray
  *   0xa0-0xbf: fixstr
+ *   0xc0     : nil
  *   0xc2-0xc3: boolean
  *   0xcc-0xcd: uint8/16
  *   0xd9-0xda: string
@@ -16,8 +17,6 @@
  *   0xde:      map16
  *   0xe0-0xff: negative fixint
  *
- * Unsupported encodings:
- *   0xc0: nil
  */
 
 #include "stdlib.h"
@@ -40,15 +39,6 @@ static inline unsigned int _bswap_32(unsigned int x) {
 static inline uint64_t _bswap_64(uint64_t x) {
     return ((uint64_t)_bswap_32(x&0xffffffff) << 32) | (_bswap_32(x >> 32));
 }
-#if 0
-static inline void _store_be16(void *dest, unsigned short *val) {
-    *((unsigned short*)dest) = _bswap_16(*val);
-}
-#endif
-
-static inline void _store_be32(void *dest, unsigned long *val) {
-    *((unsigned long*)dest) = _bswap_32(*val);
-}
 #endif
 
 /*
@@ -65,16 +55,6 @@ static inline unsigned int _bswap_32(unsigned int x) {
 
 static inline uint64_t _bswap_64(uint64_t x) {
     return x;
-}
-#if 0
-static inline void _store_be16(void *dest, unsigned short val) {
-    *((unsigned short*)dest) = val;
-}
-#endif
-
-static inline void _store_be32(void *dest, void *val) {
-    unsigned long *d = (unsigned long *) dest;
-    *d = *((unsigned long *) val);
 }
 #endif
 
@@ -391,6 +371,7 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects)
         buf->data[buf->pos++] = 0xdf;
         encode_32bit_value(buf, (uint32_t)num_objects);
         break;
+
     default:
         return 0;
     }
@@ -428,9 +409,11 @@ int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length) {
         buf->data[buf->pos++] = 0x0da;
         encode_16bit_value(buf, (uint16_t)length);
         break;
+
     default:
         return 0;
     }
+
     if (s) {
         memcpy(&buf->data[buf->pos], (void*)s, length);
         buf->pos += length;
