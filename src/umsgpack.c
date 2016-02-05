@@ -40,15 +40,6 @@ static inline unsigned int _bswap_32(unsigned int x) {
 static inline uint64_t _bswap_64(uint64_t x) {
     return ((uint64_t)_bswap_32(x&0xffffffff) << 32) | (_bswap_32(x >> 32));
 }
-#if 0
-static inline void _store_be16(void *dest, unsigned short *val) {
-    *((unsigned short*)dest) = _bswap_16(*val);
-}
-#endif
-
-static inline void _store_be32(void *dest, unsigned long *val) {
-    *((unsigned long*)dest) = _bswap_32(*val);
-}
 #endif
 
 /*
@@ -65,16 +56,6 @@ static inline unsigned int _bswap_32(unsigned int x) {
 
 static inline uint64_t _bswap_64(uint64_t x) {
     return x;
-}
-#if 0
-static inline void _store_be16(void *dest, unsigned short val) {
-    *((unsigned short*)dest) = val;
-}
-#endif
-
-static inline void _store_be32(void *dest, void *val) {
-    unsigned long *d = (unsigned long *) dest;
-    *d = *((unsigned long *) val);
 }
 #endif
 
