@@ -371,6 +371,7 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects)
         buf->data[buf->pos++] = 0xdf;
         encode_32bit_value(buf, (uint32_t)num_objects);
         break;
+
     default:
         return 0;
     }
@@ -408,9 +409,11 @@ int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length) {
         buf->data[buf->pos++] = 0x0da;
         encode_16bit_value(buf, (uint16_t)length);
         break;
+
     default:
         return 0;
     }
+
     if (s) {
         memcpy(&buf->data[buf->pos], (void*)s, length);
         buf->pos += length;
