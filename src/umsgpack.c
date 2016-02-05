@@ -452,6 +452,19 @@ int umsgpack_pack_bool(struct umsgpack_packer_buf *buf, int val) {
     return 1;
 }
 
+/**
+ * @param[in] buf    Destination buffer
+ */
+int umsgpack_pack_nil(struct umsgpack_packer_buf *buf) {
+    int bytes = 1;
+
+    if (buf->pos + bytes > buf->length)
+        return 0;
+
+    buf->data[buf->pos++] = 0xc0;
+    return 1;
+}
+
 void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size) {
      if (buf) {
         buf->length = size - sizeof(struct umsgpack_packer_buf);

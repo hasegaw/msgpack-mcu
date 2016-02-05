@@ -91,6 +91,7 @@ int umsgpack_pack_double(struct umsgpack_packer_buf *buf, double val);
 int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects);
 int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length);
 int umsgpack_pack_bool(struct umsgpack_packer_buf *buf, int val);
+int umsgpack_pack_nil(struct umsgpack_packer_buf *buf);
 void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size);
 struct umsgpack_packer_buf *umsgpack_alloc(int size);
 int umsgpack_free(struct umsgpack_packer_buf *buf);

@@ -144,6 +144,19 @@ MU_TEST(test_fixstr) {
 
 MU_TEST(test_nil) {
 	/* 0xc0 */
+	const size_t data_size = FORMAT_MAX_SIZE;
+	m_pack = umsgpack_alloc(data_size);
+	if (!m_pack) {
+		fprintf(stderr, "%s: failed umsgpack_alloc(%lu). skip test.\n", __func__, data_size);
+		return;
+	}
+
+	uint8_t expects = 0xc0;
+	mu_check( umsgpack_pack_nil(m_pack) );
+	// length
+	mu_assert_int_eq(1, m_pack->pos);
+	// format
+	mu_assert_int_eq(expects, (uint8_t)m_pack->data[0]);
 }
 
 MU_TEST(test_false) {
