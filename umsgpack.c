@@ -141,6 +141,8 @@ int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length) {
 
 /* 16 bit integer */
 
+#ifdef UMSGPACK_FUNC_INT16
+
 /**
  * @param[in] buf    Destination buffer
  * @param[in] val    Value to be packed
@@ -210,6 +212,7 @@ int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val) {
     }
     return 1;
 }
+#endif
 
 /* 32 bit integer */
 

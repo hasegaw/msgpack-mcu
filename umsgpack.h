@@ -61,9 +61,10 @@
  */
 #define UMSGPACK_HW_FLOAT_IEEE754COMPLIANT 1
 #define UMSGPACK_HW_LITTLE_ENDIAN 1
+#define UMSGPACK_FUNC_INT16 1
 #define UMSGPACK_FUNC_INT32 1
 #define UMSGPACK_INT_WIDTH_16 1
-
+#define UMSGPACK_LITTLE_ENDIAN
 #endif
 
 #ifdef __18CXX
@@ -98,10 +99,17 @@ struct umsgpack_packer_buf {
 int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length);
 int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val);
 int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val);
+
+#ifdef UMSGPACK_FUNC_INT16
+int umsgpack_pack_uint16(struct umsgpack_packer_buf *buf, uint16_t val);
+int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val);
+#endif
+
 #ifdef UMSGPACK_FUNC_INT32
 int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val);
 int umsgpack_pack_int32(struct umsgpack_packer_buf *buf, int32_t val);
 #endif
+
 #ifdef UMSGPACK_FUNC_INT64
 int umsgpack_pack_uint64(struct umsgpack_packer_buf *buf, uint64_t val);
 int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val);

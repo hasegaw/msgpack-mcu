@@ -26,5 +26,5 @@
         "messagepack", 
         "msgpack-mcu"
     ], 
-    "description": "msgpack-mcu is a purpose-built seralizer that targets MCUs (Micro Controller Units) such as PIC, AVR, and other embedded microcontrollers."
+    "description": "msgpack-mcu is a purpose-built serializer that targets MCUs (Micro Controller Units) such as PIC, AVR, and other embedded microcontrollers."
 }
