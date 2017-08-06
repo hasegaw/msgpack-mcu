@@ -1,0 +1,30 @@
+{
+    "name": "msgpack-mcu", 
+    "repository": {
+        "url": "https://github.com/elliotwoods/msgpack-mcu.git", 
+        "type": "git"
+    }, 
+    "platforms": [
+        "atmelavr"
+    ], 
+    "frameworks": [
+        "arduino"
+    ], 
+    "version": "1.0.0", 
+    "export": {
+    }, 
+    "authors": [
+        {
+            "maintainer": false, 
+            "name": "hasegaw", 
+            "url": "https://github.com/hasegaw", 
+            "email": null
+        }
+    ], 
+    "keywords": [
+        "msgpack", 
+        "messagepack", 
+        "msgpack-mcu"
+    ], 
+    "description": "msgpack-mcu is a purpose-built seralizer that targets MCUs (Micro Controller Units) such as PIC, AVR, and other embedded microcontrollers."
+}

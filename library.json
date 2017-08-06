@@ -1,0 +1,20 @@
+{
+  "name": "msgpack-mcu",
+  "keywords": "msgpack, serialization",
+  "description": "msgpack-mcu is a purpose-built seralizer that targets MCUs (Micro Controller Units) such as PIC, AVR, and other embedded microcontrollers.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elliotwoods/msgpack-mcu.git"
+  },
+  "version": "1.0.0",
+  "authors": {
+    "name": "hasegaw",
+    "url": "https://github.com/hasegaw"
+  },
+  "exclude": [
+    "examples",
+    "patches"
+  ],
+  "frameworks": "arduino",
+  "platforms": "*"
+}
