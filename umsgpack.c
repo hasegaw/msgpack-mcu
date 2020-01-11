@@ -503,5 +503,6 @@ struct umsgpack_packer_buf *umsgpack_alloc(size_t size) {
  */
 int umsgpack_free(struct umsgpack_packer_buf *buf) {
     free(buf);
+    buf = NULL;
     return 1;
 }
