@@ -58,7 +58,7 @@ static inline uint16_t _bswap_16(uint16_t x) {
 }
 
 static inline uint32_t _bswap_32(uint32_t x) {
-    return (_bswap_16(x&0xffff) << 16) | (_bswap_16(x >> 16));
+    return ((uint32_t)_bswap_16(x&0xffff) << 16) | (_bswap_16(x >> 16));
 }
 
 static inline uint64_t _bswap_64(uint64_t x) {
