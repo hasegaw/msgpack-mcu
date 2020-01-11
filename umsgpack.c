@@ -416,7 +416,7 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, uint32_t num_objects) {
  *
  * If s is NULL, the function won't copy the string into the buffer.
  */
-int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, uint32_t length) {
+int umsgpack_pack_str(struct umsgpack_packer_buf *buf, const char *s, uint32_t length) {
     int bytes;
     bytes = length <= 31 ? 1:
             length <= 0xFF ? 2:

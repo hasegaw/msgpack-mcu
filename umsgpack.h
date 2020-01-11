@@ -120,7 +120,7 @@ int umsgpack_pack_float(struct umsgpack_packer_buf *, float);
 int umsgpack_pack_double(struct umsgpack_packer_buf *, double);
 #endif
 int umsgpack_pack_map(struct umsgpack_packer_buf *, uint32_t);
-int umsgpack_pack_str(struct umsgpack_packer_buf *, char *, uint32_t);
+int umsgpack_pack_str(struct umsgpack_packer_buf *, const char *, uint32_t);
 int umsgpack_pack_bool(struct umsgpack_packer_buf *, int);
 int umsgpack_pack_nil(struct umsgpack_packer_buf *);
 void umsgpack_packer_init(struct umsgpack_packer_buf *, size_t);
