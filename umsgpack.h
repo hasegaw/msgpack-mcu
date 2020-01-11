@@ -31,7 +31,7 @@
 #ifndef UMSGPACK_H_
 #define UMSGPACK_H_
 
-#include "stdint.h"
+#include <stdint.h>
 
 #ifdef __x86_64__
 /* Intel EM64T (x86_64)
