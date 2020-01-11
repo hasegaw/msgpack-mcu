@@ -99,6 +99,7 @@ static void encode_32bit_value(struct umsgpack_packer_buf *buf, uint32_t val) {
     buf->data[buf->pos++] = p[3];
 }
 
+#ifdef UMSGPACK_FUNC_INT64
 static void encode_64bit_value(struct umsgpack_packer_buf *buf, uint64_t val) {
     uint64_t be = _bswap_64(val);
     const uint8_t *p = (const uint8_t*)&be;
@@ -111,6 +112,7 @@ static void encode_64bit_value(struct umsgpack_packer_buf *buf, uint64_t val) {
     buf->data[buf->pos++] = p[6];
     buf->data[buf->pos++] = p[7];
 }
+#endif
 
 /**
  * @param[in] buf    Destination buffer
