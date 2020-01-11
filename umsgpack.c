@@ -53,11 +53,11 @@
  * Little Endian
  */
 #ifdef UMSGPACK_LITTLE_ENDIAN
-static inline unsigned short _bswap_16(unsigned short x) {
+static inline uint16_t _bswap_16(uint16_t x) {
     return (x << 8) | (x >> 8);
 }
 
-static inline unsigned int _bswap_32(unsigned int x) {
+static inline uint32_t _bswap_32(uint32_t x) {
     return (_bswap_16(x&0xffff) << 16) | (_bswap_16(x >> 16));
 }
 
@@ -70,11 +70,11 @@ static inline uint64_t _bswap_64(uint64_t x) {
  * Big Endian
  */
 #ifdef UMSGPACK_BIG_ENDIAN
-static inline unsigned short _bswap_16(unsigned short x) {
+static inline uint16_t _bswap_16(uint16_t x) {
     return x;
 }
 
-static inline unsigned int _bswap_32(unsigned int x) {
+static inline uint32_t _bswap_32(uint32_t x) {
     return x;
 }
 
@@ -376,7 +376,7 @@ int umsgpack_pack_double(struct umsgpack_packer_buf *buf, double val) {
  * @param[in] buf         Destination buffer
  * @param[in] num_objects Number of objects (key-value pairs) in the map
  */
-int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects) {
+int umsgpack_pack_map(struct umsgpack_packer_buf *buf, uint32_t num_objects) {
     int bytes;
     bytes = num_objects <= 0x0f ? 1:
             num_objects <= 0xFFFF ? 3:
@@ -414,7 +414,7 @@ int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects)
  *
  * If s is NULL, the function won't copy the string into the buffer.
  */
-int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length) {
+int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, uint32_t length) {
     int bytes;
     bytes = length <= 31 ? 1:
             length <= 0xFF ? 2:
@@ -476,7 +476,7 @@ int umsgpack_pack_nil(struct umsgpack_packer_buf *buf) {
     return 1;
 }
 
-void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size) {
+void umsgpack_packer_init(struct umsgpack_packer_buf *buf, size_t size) {
      if (buf) {
         buf->length = size - sizeof(struct umsgpack_packer_buf);
         buf->pos = 0;
@@ -489,7 +489,7 @@ void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size) {
  * In messagepack-lite, the caller is responsible for estimating
  * the buffer size needed.
  */
-struct umsgpack_packer_buf *umsgpack_alloc(int size) {
+struct umsgpack_packer_buf *umsgpack_alloc(size_t size) {
     struct umsgpack_packer_buf *buf = malloc(size + sizeof(struct umsgpack_packer_buf));
     if (buf) {
         buf->length = size;
