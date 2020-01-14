@@ -31,7 +31,7 @@
 #ifndef UMSGPACK_H_
 #define UMSGPACK_H_
 
-#include "stdint.h"
+#include <stdint.h>
 
 #ifdef __x86_64__
 /* Intel EM64T (x86_64)
@@ -96,35 +96,35 @@ struct umsgpack_packer_buf {
 
 #define umsgpack_get_length(buf) buf->pos
 
-int umsgpack_pack_array(struct umsgpack_packer_buf *buf, int length);
-int umsgpack_pack_uint(struct umsgpack_packer_buf *buf, unsigned int val);
-int umsgpack_pack_int(struct umsgpack_packer_buf *buf, int val);
+int umsgpack_pack_array(struct umsgpack_packer_buf *, int);
+int umsgpack_pack_uint(struct umsgpack_packer_buf *, unsigned int);
+int umsgpack_pack_int(struct umsgpack_packer_buf *, int);
 
 #ifdef UMSGPACK_FUNC_INT16
-int umsgpack_pack_uint16(struct umsgpack_packer_buf *buf, uint16_t val);
-int umsgpack_pack_int16(struct umsgpack_packer_buf *buf, int16_t val);
+int umsgpack_pack_uint16(struct umsgpack_packer_buf *, uint16_t);
+int umsgpack_pack_int16(struct umsgpack_packer_buf *, int16_t);
 #endif
 
 #ifdef UMSGPACK_FUNC_INT32
-int umsgpack_pack_uint32(struct umsgpack_packer_buf *buf, uint32_t val);
-int umsgpack_pack_int32(struct umsgpack_packer_buf *buf, int32_t val);
+int umsgpack_pack_uint32(struct umsgpack_packer_buf *, uint32_t);
+int umsgpack_pack_int32(struct umsgpack_packer_buf *, int32_t);
 #endif
 
 #ifdef UMSGPACK_FUNC_INT64
-int umsgpack_pack_uint64(struct umsgpack_packer_buf *buf, uint64_t val);
-int umsgpack_pack_int64(struct umsgpack_packer_buf *buf, int64_t val);
+int umsgpack_pack_uint64(struct umsgpack_packer_buf *, uint64_t);
+int umsgpack_pack_int64(struct umsgpack_packer_buf *, int64_t);
 #endif
 
-int umsgpack_pack_float(struct umsgpack_packer_buf *buf, float val);
+int umsgpack_pack_float(struct umsgpack_packer_buf *, float);
 #if 0
-int umsgpack_pack_double(struct umsgpack_packer_buf *buf, double val);
+int umsgpack_pack_double(struct umsgpack_packer_buf *, double);
 #endif
-int umsgpack_pack_map(struct umsgpack_packer_buf *buf, unsigned int num_objects);
-int umsgpack_pack_str(struct umsgpack_packer_buf *buf, char* s, int length);
-int umsgpack_pack_bool(struct umsgpack_packer_buf *buf, int val);
-int umsgpack_pack_nil(struct umsgpack_packer_buf *buf);
-void umsgpack_packer_init(struct umsgpack_packer_buf *buf, int size);
-struct umsgpack_packer_buf *umsgpack_alloc(int size);
-int umsgpack_free(struct umsgpack_packer_buf *buf);
+int umsgpack_pack_map(struct umsgpack_packer_buf *, uint32_t);
+int umsgpack_pack_str(struct umsgpack_packer_buf *, const char *, uint32_t);
+int umsgpack_pack_bool(struct umsgpack_packer_buf *, int);
+int umsgpack_pack_nil(struct umsgpack_packer_buf *);
+void umsgpack_packer_init(struct umsgpack_packer_buf *, size_t);
+struct umsgpack_packer_buf *umsgpack_alloc(size_t);
+int umsgpack_free(struct umsgpack_packer_buf *);
 
 #endif /* UMSGPACK_H_ */
